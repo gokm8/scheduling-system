@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Employee {
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
+  role  Role
+
+  shifts Shift[]
+}
+
+model Shift {
+  id         String    @id @default(uuid())
+  startsAt   DateTime
+  endsAt     DateTime
+  role       Role
+  employeeId String? // this is a foreign key to the Employee model
+  employee   Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull) // this is a relation to the Employee model
+
+  @@index([employeeId]) // this is a index on the employeeId column
+}
+
+enum Role {
+  KOK
+  TJENER
+  OPVAASKER
+}
