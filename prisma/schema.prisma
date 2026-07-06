@@ -7,11 +7,10 @@ datasource db {
 }
 
 model Employee {
-  id    String @id @default(uuid())
-  name  String
-  email String @unique
-  role  Role
-
+  id     String  @id @default(uuid())
+  name   String
+  email  String  @unique
+  role   Role
   shifts Shift[]
 }
 
@@ -20,10 +19,10 @@ model Shift {
   startsAt   DateTime
   endsAt     DateTime
   role       Role
-  employeeId String? // this is a foreign key to the Employee model
-  employee   Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull) // this is a relation to the Employee model
+  employeeId String?
+  employee   Employee? @relation(fields: [employeeId], references: [id])
 
-  @@index([employeeId]) // this is a index on the employeeId column
+  @@index([employeeId])
 }
 
 enum Role {
