@@ -1,4 +1,5 @@
 import CalendarComponent from "@/components/Calendar";
+import CreateShift from "@/components/CreateShift";
 
 export default function Home() {
   const events = [
@@ -22,6 +23,7 @@ export default function Home() {
   return (
     <div>
       <h1>Vagtplanlægningssystem</h1>
+      <CreateShift />
       <CalendarComponent events={events} />
     </div>
   );
