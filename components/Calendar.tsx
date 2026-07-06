@@ -46,7 +46,7 @@ export type Event = {
 
 export default function CalendarComponent({ events }: { events: Event[] }) {
   return (
-    <div>
+    <>
       <Calendar
         localizer={localizer}
         messages={messages}
@@ -56,6 +56,6 @@ export default function CalendarComponent({ events }: { events: Event[] }) {
         endAccessor="end"
         style={{ height: 500 }}
       />
-    </div>
+    </>
   );
 }
