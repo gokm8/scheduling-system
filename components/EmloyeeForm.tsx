@@ -1,5 +1,6 @@
 "use client";
 
+import { Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
 export default function EmployeeFormComponent() {
@@ -44,8 +45,16 @@ export default function EmployeeFormComponent() {
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Navn" name="name" />
         <input type="text" placeholder="E-mail" name="email" />
-        <input type="text" placeholder="Rolle" name="role" />
-        <button type="submit">Submit</button>
+        <select name="role" id="role">
+          <option value="">Vælg en rolle</option>
+          {Object.values(Role).map((role: string) => (
+            <option key={role} value={role}>
+              {/* Capitalize the first letter of the role */}
+              {role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}
+            </option>
+          ))}
+        </select>
+        <button type="submit">Opret medarbejder</button>
       </form>
     </>
   );
