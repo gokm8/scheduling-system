@@ -1,24 +1,17 @@
+import { prisma } from "@/lib/prisma";
 import CalendarComponent from "@/components/Calendar";
 import CreateShift from "@/components/CreateShift";
 
-export default function Home() {
-  const events = [
-    {
-      start: new Date(2026, 6, 6, 10, 0),
-      end: new Date(2026, 6, 6, 20, 0),
-      title: "Kok",
-    },
-    {
-      start: new Date(2026, 6, 7, 10, 0),
-      end: new Date(2026, 6, 7, 20, 0),
-      title: "Tjener",
-    },
-    {
-      start: new Date(2026, 6, 8, 10, 0),
-      end: new Date(2026, 6, 8, 20, 0),
-      title: "Opvasker",
-    },
-  ];
+export default async function Home() {
+  // Fetch shifts from the database
+  const shifts = await prisma.shift.findMany();
+
+  // Map shifts to events
+  const events = shifts.map((shift) => ({
+    start: shift.startsAt,
+    end: shift.endsAt,
+    title: `(${shift.role})`,
+  }));
 
   return (
     <div>
