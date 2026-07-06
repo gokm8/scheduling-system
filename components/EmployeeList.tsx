@@ -5,7 +5,7 @@ export default function EmployeeList({ employees }: { employees: Employee[] }) {
     <div>
       {employees.map((employee) => (
         <div key={employee.id}>
-          {employee.name} - {employee.role} - {employee.email}
+          {employee.name} - {employee.role} - {employee.email} - {employee.id}
         </div>
       ))}
     </div>
