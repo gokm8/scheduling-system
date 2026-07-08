@@ -22,6 +22,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Role } from "@prisma/client";
 
 // Messages in the calender UI
 const messages = {
@@ -60,6 +61,14 @@ export type Event = {
   start: Date;
   end: Date;
   title: string;
+  role: Role;
+};
+
+// Background color for each role
+const roleColors: Record<Role, string> = {
+  KOK: "#2a78d6", // blå
+  TJENER: "#008300", // grøn
+  OPVAASKER: "#4a3aa7", // lilla
 };
 
 // export const handleEventSelection = (e: Event) => {
@@ -135,6 +144,9 @@ export default function CalendarComponent({ events }: { events: Event[] }) {
           endAccessor="end"
           style={{ height: 600 }}
           // onSelectEvent={handleEventSelection}
+          eventPropGetter={(event) => ({
+            style: { backgroundColor: roleColors[event.role] },
+          })}
           components={{ toolbar: CalendarToolbar }}
         />
       </CardContent>
