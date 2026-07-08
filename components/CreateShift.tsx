@@ -4,10 +4,45 @@ import { Employee } from "@prisma/client";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+
+// Capitalize the first letter of the role
+function formatRole(role: string) {
+  return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+}
 
 export default function CreateShift() {
   const router = useRouter();
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employeeId, setEmployeeId] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch employees when the component mounts
   useEffect(() => {
@@ -16,25 +51,53 @@ export default function CreateShift() {
       .then((data) => setEmployees(data));
   }, []);
 
+  // Items for the employee select
+  const employeeItems = employees.map((employee) => ({
+    label: employee.name,
+    value: employee.id,
+  }));
+
+  const selectedEmployee = employees.find((emp) => emp.id === employeeId);
+
   // Handle submit event when the form is submitted
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError(null);
 
-    // Get form data from the form element
+    // If no employee is selected, show an error
+    if (!employeeId || !selectedEmployee) {
+      setError("Vælg en medarbejder for at oprette vagten.");
+      return;
+    }
+
+    // Retrieve dates from the form
     const form = e.currentTarget;
     const formData = new FormData(form);
+    console.log("Form data:", Object.fromEntries(formData)); // Log the form data to the console
 
-    const employeeId = formData.get("employeeId") as string;
-    const employee = employees.find((emp) => emp.id === employeeId);
+    // Retrieve the start and end times from the form data
+    const startsAt = new Date(formData.get("startsAt") as string);
+    const endsAt = new Date(formData.get("endsAt") as string);
 
+    // If the end time is before the start time, show an error
+    if (endsAt <= startsAt) {
+      setError("Sluttidspunktet skal være efter starttidspunktet.");
+      return;
+    }
+
+    // Create the body of the request
     const body = {
-      startsAt: new Date(formData.get("startsAt") as string).toISOString(),
-      endsAt: new Date(formData.get("endsAt") as string).toISOString(),
-      employeeId: employeeId || null,
-      role: employee?.role,
+      startsAt: startsAt.toISOString(),
+      endsAt: endsAt.toISOString(),
+      employeeId,
+      role: selectedEmployee.role,
     };
+    console.log("Body:", body); // Log the body to the console
 
     // Try to send the data to the API
+    setIsPending(true);
+
+    // Try to create the shift
     try {
       const response = await fetch("/api/shifts", {
         method: "POST",
@@ -42,46 +105,106 @@ export default function CreateShift() {
         body: JSON.stringify(body),
       });
 
-      // If the response is not ok, log the error
+      // If the response is not ok, show an error
       if (!response.ok) {
         console.error("Failed to create shift:", response.status);
+        setError("Vagten kunne ikke oprettes. Prøv igen.");
         return;
       }
 
-      // Reset the form and refresh the page
+      // Reset the form and refresh the page to show the new shift
       form.reset();
+      setEmployeeId(null);
       router.refresh();
 
-      // Catch error if the shift creation fails
+      // Catch error if the shift creation fails and show an error
     } catch (error) {
       console.error("Failed to create shift", error);
+      setError("Vagten kunne ikke oprettes. Prøv igen.");
+    } finally {
+      setIsPending(false);
     }
   }
 
+  // Get the today's date
+  const today = format(new Date(), "yyyy-MM-dd");
+
   return (
-    <div>
-      <h1>Create Shift</h1>
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>Opret vagt</CardTitle>
+        <CardDescription>
+          Vælg en medarbejder og et tidsrum for vagten.
+        </CardDescription>
+      </CardHeader>
       <form onSubmit={handleSubmit}>
-        <select name="employeeId" id="employeeId">
-          <option value="">Select Employee</option>
-          {employees.map((employee) => (
-            <option key={employee.id} value={employee.id}>
-              {employee.name} ({employee.role})
-            </option>
-          ))}
-        </select>
-        <input
-          type="datetime-local"
-          name="startsAt"
-          defaultValue="2026-07-07T15:00"
-        />
-        <input
-          type="datetime-local"
-          name="endsAt"
-          defaultValue="2026-07-07T20:00"
-        />
-        <button type="submit">Opret vagt</button>
+        <CardContent>
+          <FieldGroup>
+            <Field data-invalid={!employeeId && error ? true : undefined}>
+              <FieldLabel htmlFor="employeeId">Medarbejder</FieldLabel>
+              <Select
+                items={employeeItems}
+                value={employeeId}
+                onValueChange={(value) => setEmployeeId(value as string | null)}
+              >
+                <SelectTrigger
+                  id="employeeId"
+                  className="w-full"
+                  aria-invalid={!employeeId && error ? true : undefined}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {employees.map((employee) => (
+                      <SelectItem key={employee.id} value={employee.id}>
+                        {employee.name}
+                        <span className="text-muted-foreground">
+                          {formatRole(employee.role)}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <FieldDescription>
+                {selectedEmployee
+                  ? `Vagten oprettes som ${formatRole(selectedEmployee.role)}.`
+                  : "Vagtens rolle følger medarbejderens rolle."}
+              </FieldDescription>
+            </Field>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field>
+                <FieldLabel htmlFor="startsAt">Starter</FieldLabel>
+                <Input
+                  type="datetime-local"
+                  id="startsAt"
+                  name="startsAt"
+                  defaultValue={`${today}T15:00`}
+                  required
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="endsAt">Slutter</FieldLabel>
+                <Input
+                  type="datetime-local"
+                  id="endsAt"
+                  name="endsAt"
+                  defaultValue={`${today}T20:00`}
+                  required
+                />
+              </Field>
+            </div>
+            {error && <FieldError>{error}</FieldError>}
+          </FieldGroup>
+        </CardContent>
+        <CardFooter>
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending && <Spinner data-icon="inline-start" />}
+            {isPending ? "Opretter vagt..." : "Opret vagt"}
+          </Button>
+        </CardFooter>
       </form>
-    </div>
+    </Card>
   );
 }
