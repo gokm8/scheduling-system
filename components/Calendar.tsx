@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Employee, Role } from "@prisma/client";
+import { roleColors } from "@/lib/roles";
 
 // Messages in the calender UI
 const messages = {
@@ -73,13 +74,6 @@ export type Event = {
   title: string;
   role: Role;
   employeeId: string | null;
-};
-
-// Background color for each role
-const roleColors: Record<Role, string> = {
-  KOK: "#2a78d6", // blå
-  TJENER: "#008300", // grøn
-  OPVAASKER: "#4a3aa7", // lilla
 };
 
 // export const handleEventSelection = (e: Event) => {
