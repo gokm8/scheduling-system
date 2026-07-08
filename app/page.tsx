@@ -15,10 +15,9 @@ export default async function Home() {
   }));
 
   return (
-    <div>
-      <h1>Vagtplanlægningssystem</h1>
+    <>
       <CreateShift />
       <CalendarComponent events={events} />
-    </div>
+    </>
   );
 }
