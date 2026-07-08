@@ -11,6 +11,7 @@ export default async function Home() {
     start: shift.startsAt,
     end: shift.endsAt,
     title: `(${shift.role})`,
+    role: shift.role,
   }));
 
   return (
