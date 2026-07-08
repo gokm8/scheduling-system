@@ -1,4 +1,4 @@
-import EmployeeFormComponent from "@/components/EmloyeeForm";
+import EmployeeForm from "@/components/EmployeeForm";
 import EmployeeList from "@/components/EmployeeList";
 import { prisma } from "@/lib/prisma";
 
@@ -7,7 +7,7 @@ export default async function MedarbejderePage() {
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-      <EmployeeFormComponent />
+      <EmployeeForm />
       <EmployeeList employees={employees} />
     </div>
   );

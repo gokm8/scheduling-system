@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import CalendarComponent from "@/components/Calendar";
+import ShiftCalendar from "@/components/ShiftCalendar";
 import CreateShift from "@/components/CreateShift";
 
 export default async function Home() {
@@ -19,7 +19,7 @@ export default async function Home() {
   return (
     <>
       <CreateShift />
-      <CalendarComponent events={events} employees={employees} />
+      <ShiftCalendar events={events} employees={employees} />
     </>
   );
 }

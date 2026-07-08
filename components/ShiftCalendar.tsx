@@ -131,7 +131,7 @@ function CalendarToolbar({
   );
 }
 
-export default function CalendarComponent({
+export default function ShiftCalendar({
   events,
   employees,
 }: {

@@ -39,7 +39,7 @@ const roleItems = [
   })),
 ];
 
-export default function EmployeeFormComponent() {
+export default function EmployeeForm() {
   const router = useRouter();
   const [role, setRole] = useState<Role | null>(null);
   const [isPending, setIsPending] = useState(false);
