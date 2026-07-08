@@ -26,7 +26,10 @@ model Shift {
 }
 
 enum Role {
+  KØKKENCHEF
+  SOUSCHEF
   KOK
+  KØKKENASSISTENT
   TJENER
-  OPVAASKER
+  OPVASKER
 }
