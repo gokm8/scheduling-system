@@ -3,8 +3,9 @@ import CalendarComponent from "@/components/Calendar";
 import CreateShift from "@/components/CreateShift";
 
 export default async function Home() {
-  // Fetch shifts from the database
+  // Fetch shifts and employees from the database
   const shifts = await prisma.shift.findMany();
+  const employees = await prisma.employee.findMany();
 
   // Map shifts to events
   const events = shifts.map((shift) => ({
@@ -12,12 +13,13 @@ export default async function Home() {
     end: shift.endsAt,
     title: `(${shift.role})`,
     role: shift.role,
+    employeeId: shift.employeeId,
   }));
 
   return (
     <>
       <CreateShift />
-      <CalendarComponent events={events} />
+      <CalendarComponent events={events} employees={employees} />
     </>
   );
 }

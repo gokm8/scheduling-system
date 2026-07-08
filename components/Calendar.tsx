@@ -1,6 +1,7 @@
 "use client";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { useState } from "react";
 import {
   Calendar,
   dateFnsLocalizer,
@@ -16,13 +17,22 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Role } from "@prisma/client";
+import type { Employee, Role } from "@prisma/client";
 
 // Messages in the calender UI
 const messages = {
@@ -62,6 +72,7 @@ export type Event = {
   end: Date;
   title: string;
   role: Role;
+  employeeId: string | null;
 };
 
 // Background color for each role
@@ -126,19 +137,70 @@ function CalendarToolbar({
   );
 }
 
-export default function CalendarComponent({ events }: { events: Event[] }) {
+export default function CalendarComponent({
+  events,
+  employees,
+}: {
+  events: Event[];
+  employees: Employee[];
+}) {
+  // Which employee's shifts to show (null = all shifts, the admin view)
+  const [filterId, setFilterId] = useState<string | null>(null);
+
+  // Items for the filter select (the null item is the default "show all" view)
+  const filterItems = [
+    { label: "Alle vagter", value: null },
+    ...employees.map((employee) => ({
+      label: employee.name,
+      value: employee.id,
+    })),
+  ];
+
+  // Only show the selected employee's shifts
+  const visibleEvents = filterId
+    ? events.filter((event) => event.employeeId === filterId)
+    : events;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Vagtplan</CardTitle>
         <CardDescription>Overblik over planlagte vagter.</CardDescription>
+        <CardAction>
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="employee-filter"
+              className="text-sm text-muted-foreground"
+            >
+              Vis:
+            </label>
+            <Select
+              items={filterItems}
+              value={filterId}
+              onValueChange={(value) => setFilterId(value as string | null)}
+            >
+              <SelectTrigger id="employee-filter" size="sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent alignItemWithTrigger={false} align="end">
+                <SelectGroup>
+                  {filterItems.map((item) => (
+                    <SelectItem key={item.value ?? "all"} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <Calendar
           localizer={localizer}
           messages={messages}
           culture="da"
-          events={events}
+          events={visibleEvents}
           views={views.map((view) => view.value)}
           startAccessor="start"
           endAccessor="end"
