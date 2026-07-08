@@ -6,7 +6,7 @@ export default async function MedarbejderePage() {
   const employees = await prisma.employee.findMany();
 
   return (
-    <div>
+    <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
       <EmployeeFormComponent />
       <EmployeeList employees={employees} />
     </div>
