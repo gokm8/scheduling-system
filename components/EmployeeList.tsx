@@ -1,5 +1,6 @@
 import { Employee } from "@prisma/client";
 import { UsersIcon } from "lucide-react";
+import EditEmployee from "@/components/EditEmployee";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -56,6 +57,9 @@ export default function EmployeeList({ employees }: { employees: Employee[] }) {
                 <TableHead>Navn</TableHead>
                 <TableHead>E-mail</TableHead>
                 <TableHead>Rolle</TableHead>
+                <TableHead className="w-0">
+                  <span className="sr-only">Rediger</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -74,6 +78,9 @@ export default function EmployeeList({ employees }: { employees: Employee[] }) {
                       />
                       {formatRole(employee.role)}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <EditEmployee employee={employee} />
                   </TableCell>
                 </TableRow>
               ))}
