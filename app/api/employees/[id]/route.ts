@@ -14,3 +14,13 @@ export async function PATCH(
   });
   return NextResponse.json(employee);
 }
+
+// DELETE an employee
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const employee = await prisma.employee.delete({ where: { id } });
+  return NextResponse.json(employee);
+}
