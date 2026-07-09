@@ -1,5 +1,6 @@
 import { Employee } from "@prisma/client";
 import { UsersIcon } from "lucide-react";
+import DeleteEmployee from "@/components/DeleteEmployee";
 import EditEmployee from "@/components/EditEmployee";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -58,7 +59,7 @@ export default function EmployeeList({ employees }: { employees: Employee[] }) {
                 <TableHead>E-mail</TableHead>
                 <TableHead>Rolle</TableHead>
                 <TableHead className="w-0">
-                  <span className="sr-only">Rediger</span>
+                  <span className="sr-only">Handlinger</span>
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -80,7 +81,10 @@ export default function EmployeeList({ employees }: { employees: Employee[] }) {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <EditEmployee employee={employee} />
+                    <div className="flex items-center gap-1">
+                      <EditEmployee employee={employee} />
+                      <DeleteEmployee employee={employee} />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
