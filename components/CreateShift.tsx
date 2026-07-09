@@ -1,19 +1,22 @@
 "use client";
 
 import { Employee } from "@prisma/client";
+import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Field,
   FieldDescription,
@@ -31,14 +34,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-
-// Capitalize the first letter of the role
-function formatRole(role: string) {
-  return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
-}
+import { formatRole } from "@/lib/roles";
 
 export default function CreateShift() {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [employeeId, setEmployeeId] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -50,6 +50,15 @@ export default function CreateShift() {
       .then((res) => res.json())
       .then((data) => setEmployees(data));
   }, []);
+
+  // Reset the form state when the dialog opens
+  function handleOpenChange(open: boolean) {
+    setOpen(open);
+    if (open) {
+      setEmployeeId(null);
+      setError(null);
+    }
+  }
 
   // Items for the employee select
   const employeeItems = employees.map((employee) => ({
@@ -112,9 +121,8 @@ export default function CreateShift() {
         return;
       }
 
-      // Reset the form and refresh the page to show the new shift
-      form.reset();
-      setEmployeeId(null);
+      // Close the dialog and refresh the page to show the new shift
+      setOpen(false);
       router.refresh();
 
       // Catch error if the shift creation fails and show an error
@@ -130,15 +138,19 @@ export default function CreateShift() {
   const today = format(new Date(), "yyyy-MM-dd");
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Opret vagt</CardTitle>
-        <CardDescription>
-          Vælg en medarbejder og et tidsrum for vagten.
-        </CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger render={<Button size="sm" />}>
+        <PlusIcon data-icon="inline-start" />
+        Opret vagt
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Opret vagt</DialogTitle>
+          <DialogDescription>
+            Vælg en medarbejder og et tidsrum for vagten.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <FieldGroup>
             <Field data-invalid={!employeeId && error ? true : undefined}>
               <FieldLabel htmlFor="employeeId">Medarbejder</FieldLabel>
@@ -197,14 +209,17 @@ export default function CreateShift() {
             </div>
             {error && <FieldError>{error}</FieldError>}
           </FieldGroup>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending && <Spinner data-icon="inline-start" />}
-            {isPending ? "Opretter vagt..." : "Opret vagt"}
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline" />}>
+              Annuller
+            </DialogClose>
+            <Button type="submit" disabled={isPending}>
+              {isPending && <Spinner data-icon="inline-start" />}
+              {isPending ? "Opretter vagt..." : "Opret vagt"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

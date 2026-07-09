@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Employee, Role } from "@prisma/client";
+import CreateShift from "@/components/CreateShift";
 import { roleColors } from "@/lib/roles";
 
 // Messages in the calender UI
@@ -186,6 +187,7 @@ export default function ShiftCalendar({
                 </SelectGroup>
               </SelectContent>
             </Select>
+            <CreateShift />
           </div>
         </CardAction>
       </CardHeader>

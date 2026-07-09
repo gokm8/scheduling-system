@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import ShiftCalendar from "@/components/ShiftCalendar";
-import CreateShift from "@/components/CreateShift";
 
 export default async function Home() {
   // Fetch shifts and employees from the database
@@ -18,7 +17,6 @@ export default async function Home() {
 
   return (
     <>
-      <CreateShift />
       <ShiftCalendar events={events} employees={employees} />
     </>
   );
