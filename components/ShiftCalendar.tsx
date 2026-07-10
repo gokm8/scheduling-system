@@ -34,6 +34,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Employee, Role } from "@prisma/client";
 import CreateShift from "@/components/CreateShift";
+import EditShift from "@/components/EditShift";
 import { roleColors } from "@/lib/roles";
 
 // Messages in the calender UI
@@ -70,16 +71,13 @@ const localizer = dateFnsLocalizer({
 });
 
 export type Event = {
+  id: string;
   start: Date;
   end: Date;
   title: string;
   role: Role;
   employeeId: string | null;
 };
-
-// export const handleEventSelection = (e: Event) => {
-//   console.log(e, "Event data");
-// };
 
 // Toolbar with shadcn buttons (replaces the default rbc toolbar)
 function CalendarToolbar({
@@ -142,6 +140,9 @@ export default function ShiftCalendar({
   // Which employee's shifts to show (null = all shifts, the admin view)
   const [filterId, setFilterId] = useState<string | null>(null);
 
+  // The shift being edited (null = no dialog open)
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+
   // Items for the filter select (the null item is the default "show all" view)
   const filterItems = [
     { label: "Alle vagter", value: null },
@@ -201,12 +202,19 @@ export default function ShiftCalendar({
           startAccessor="start"
           endAccessor="end"
           style={{ height: 600 }}
-          // onSelectEvent={handleEventSelection}
+          onSelectEvent={(event) => setSelectedEvent(event)}
           eventPropGetter={(event) => ({
             style: { backgroundColor: roleColors[event.role] },
           })}
           components={{ toolbar: CalendarToolbar }}
         />
+        {selectedEvent && (
+          <EditShift
+            event={selectedEvent}
+            employees={employees}
+            onClose={() => setSelectedEvent(null)}
+          />
+        )}
       </CardContent>
     </Card>
   );

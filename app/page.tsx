@@ -10,6 +10,7 @@ export default async function Home() {
 
   // Map shifts to events
   const events = shifts.map((shift) => ({
+    id: shift.id,
     start: shift.startsAt,
     end: shift.endsAt,
     title: shift.employee?.name ?? "N/A",
