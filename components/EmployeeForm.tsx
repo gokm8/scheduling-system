@@ -156,7 +156,7 @@ export default function EmployeeForm() {
             {error && <FieldError>{error}</FieldError>}
           </FieldGroup>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="mt-4">
           <Button type="submit" className="w-full" disabled={isPending}>
             {isPending && <Spinner data-icon="inline-start" />}
             {isPending ? "Opretter medarbejder..." : "Opret medarbejder"}
