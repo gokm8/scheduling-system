@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   description: "Vagtplanlægningssystem",
 };
 
+// Allow dynamic rendering of the page
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{
