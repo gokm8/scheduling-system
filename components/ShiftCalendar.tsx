@@ -188,7 +188,7 @@ export default function ShiftCalendar({
                 </SelectGroup>
               </SelectContent>
             </Select>
-            <CreateShift />
+            <CreateShift employees={employees} />
           </div>
         </CardAction>
       </CardHeader>

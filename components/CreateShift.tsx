@@ -3,7 +3,6 @@
 import { Employee } from "@prisma/client";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -36,20 +35,12 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { formatRole } from "@/lib/roles";
 
-export default function CreateShift() {
+export default function CreateShift({ employees }: { employees: Employee[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [employees, setEmployees] = useState<Employee[]>([]);
   const [employeeId, setEmployeeId] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Fetch employees when the component mounts
-  useEffect(() => {
-    fetch("/api/employees")
-      .then((res) => res.json())
-      .then((data) => setEmployees(data));
-  }, []);
 
   // Reset the form state when the dialog opens
   function handleOpenChange(open: boolean) {
