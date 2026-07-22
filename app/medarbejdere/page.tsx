@@ -1,4 +1,4 @@
-import EmployeeForm from "@/components/EmployeeForm";
+import EmployeeForm from "@/components/CreateEmployee";
 import EmployeeList from "@/components/EmployeeList";
 import { prisma } from "@/lib/prisma";
 
